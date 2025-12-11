@@ -1,7 +1,7 @@
 {
   "name": "@entrolytics/redis-client",
   "version": "2.0.0",
-  "description": "Redis client wrapper with caching utilities for Entrolytics",
+  "description": "Redis client for Entrolytics - First-party growth analytics for the edge",
   "keywords": [
     "redis",
     "cache",

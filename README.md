@@ -1,6 +1,6 @@
 # @entrolytics/redis-client
 
-Redis client wrapper with caching utilities, rate limiting, and cache-through patterns for Entrolytics.
+Redis client for [Entrolytics](https://ng.entrolytics.click) - First-party growth analytics for the edge.
 
 ## Installation
 
