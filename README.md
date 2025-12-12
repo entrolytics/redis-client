@@ -1,6 +1,75 @@
-# @entrolytics/redis-client
+<div align="center">
+  <img src="https://raw.githubusercontent.com/entrolytics/.github/main/media/entrov2.png" alt="Entrolytics" width="64" height="64">
 
-Redis client for [Entrolytics](https://ng.entrolytics.click) - First-party growth analytics for the edge.
+  [![npm](https://img.shields.io/npm/v/@entrolytics/redis-client.svg?logo=npm)](https://www.npmjs.com/package/@entrolytics/redis-client)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+
+</div>
+
+---
+
+## Overview
+
+**@entrolytics/redis-client** is the official Redis client for Entrolytics - first-party growth analytics for the edge. Provides caching, rate limiting, and key management with automatic prefixing and statistics tracking.
+
+**Why use this client?**
+- Cache-through pattern for automatic query caching
+- Built-in rate limiting with configurable windows
+- Cache statistics for monitoring hit/miss rates
+- Pattern-based bulk cache invalidation
+
+## Key Features
+
+<table>
+<tr>
+<td width="50%">
+
+### Caching
+- Cache-through pattern
+- Automatic key prefixing
+- Soft delete support
+- Pattern invalidation
+
+</td>
+<td width="50%">
+
+### Rate Limiting
+- Configurable windows
+- Remaining count tracking
+- Per-key rate limits
+- Health monitoring
+
+</td>
+</tr>
+</table>
+
+## Quick Start
+
+<table>
+<tr>
+<td align="center" width="25%">
+<img src="https://api.iconify.design/lucide:download.svg?color=%236366f1" width="48"><br>
+<strong>1. Install</strong><br>
+<code>pnpm add</code>
+</td>
+<td align="center" width="25%">
+<img src="https://api.iconify.design/lucide:settings.svg?color=%236366f1" width="48"><br>
+<strong>2. Configure</strong><br>
+Redis URL
+</td>
+<td align="center" width="25%">
+<img src="https://api.iconify.design/lucide:server.svg?color=%236366f1" width="48"><br>
+<strong>3. Initialize</strong><br>
+Create client
+</td>
+<td align="center" width="25%">
+<img src="https://api.iconify.design/lucide:zap.svg?color=%236366f1" width="48"><br>
+<strong>4. Cache</strong><br>
+Start caching
+</td>
+</tr>
+</table>
 
 ## Installation
 
