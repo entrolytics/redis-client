@@ -13,9 +13,9 @@ export {
 export {
   createRateLimiter,
   getRateLimitHeaders,
-  rateLimit,
-  type RateLimitConfig,
   RATE_LIMITS,
+  type RateLimitConfig,
   type RateLimitResult,
+  rateLimit,
   rateLimitSimple,
 } from './rate-limit';

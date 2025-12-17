@@ -2,8 +2,9 @@
  * Rate limiting utilities with sliding window algorithm
  * Supports Redis (distributed) and in-memory (single instance) fallback
  */
-import { log } from './EntrolyticsRedisClient';
+
 import type { EntrolyticsRedisClient } from './EntrolyticsRedisClient';
+import { log } from './EntrolyticsRedisClient';
 
 export interface RateLimitConfig {
   /**
@@ -92,7 +93,7 @@ const rateLimitStore = new Map<string, number[]>();
  */
 function cleanupRateLimitStore(threshold: number) {
   for (const [key, timestamps] of rateLimitStore.entries()) {
-    const filtered = timestamps.filter((ts) => ts > threshold);
+    const filtered = timestamps.filter(ts => ts > threshold);
     if (filtered.length === 0) {
       rateLimitStore.delete(key);
     } else {
@@ -114,7 +115,7 @@ function inMemoryRateLimit(
   let timestamps = rateLimitStore.get(key) || [];
 
   // Remove old entries
-  timestamps = timestamps.filter((ts) => ts > windowStart);
+  timestamps = timestamps.filter(ts => ts > windowStart);
 
   // Check limit
   if (timestamps.length >= config.limit) {
@@ -240,7 +241,7 @@ export async function rateLimitSimple(
     const windowStart = now - windowSeconds;
 
     let timestamps = rateLimitStore.get(key) || [];
-    timestamps = timestamps.filter((ts) => ts > windowStart);
+    timestamps = timestamps.filter(ts => ts > windowStart);
 
     if (timestamps.length >= limit) {
       return true; // Rate limited
@@ -262,7 +263,9 @@ export function getRateLimitHeaders(result: RateLimitResult): Record<string, str
     'X-RateLimit-Limit': String(result.limit),
     'X-RateLimit-Remaining': String(result.remaining),
     'X-RateLimit-Reset': String(result.reset),
-    ...(result.success ? {} : { 'Retry-After': String(result.reset - Math.floor(Date.now() / 1000)) }),
+    ...(result.success
+      ? {}
+      : { 'Retry-After': String(result.reset - Math.floor(Date.now() / 1000)) }),
   };
 }
 
@@ -291,7 +294,7 @@ export function createRateLimiter(client: EntrolyticsRedisClient | null) {
         const key = `ratelimit:${config.bucket}:${identifier}`;
         const timestamps = rateLimitStore.get(key) || [];
         const windowStart = Math.floor(Date.now() / 1000) - config.window;
-        const validTimestamps = timestamps.filter((ts) => ts > windowStart);
+        const validTimestamps = timestamps.filter(ts => ts > windowStart);
         return Math.max(0, config.limit - validTimestamps.length);
       }
 

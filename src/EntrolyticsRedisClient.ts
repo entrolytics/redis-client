@@ -185,7 +185,7 @@ export class EntrolyticsRedisClient {
   async mGet(keys: string[]): Promise<(string | null)[]> {
     try {
       await this.connect();
-      const prefixedKeys = keys.map((k) => this.prefixKey(k));
+      const prefixedKeys = keys.map(k => this.prefixKey(k));
       return this._client.mGet(prefixedKeys);
     } catch (err) {
       log('Redis mGet error:', err);
