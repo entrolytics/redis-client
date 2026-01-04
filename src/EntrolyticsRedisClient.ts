@@ -448,7 +448,7 @@ export class EntrolyticsRedisClient {
       await this.connect();
 
       const prefixedPattern = this.prefixKey(pattern);
-      let cursor = 0;
+      let cursor: string = '0';
       let deletedCount = 0;
 
       do {
@@ -456,12 +456,12 @@ export class EntrolyticsRedisClient {
           MATCH: prefixedPattern,
           COUNT: 100,
         });
-        cursor = result.cursor;
+        cursor = String(result.cursor);
 
         if (result.keys.length > 0) {
           deletedCount += await this._client.del(result.keys);
         }
-      } while (cursor !== 0);
+      } while (cursor !== '0');
 
       return deletedCount;
     } catch (err) {
