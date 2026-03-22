@@ -20,27 +20,37 @@ Please read the main [Contributing Guide](../CONTRIBUTING.md) in the root of thi
 ```
 redis-client/
 ├── src/          # Source code
+
 ├── dist/         # Built output (generated)
+
 ├── package.json  # Package manifest
+
 └── README.md     # Package documentation
+
 ```
 
 ### Development Commands
 
 ```bash
+
 # Install dependencies
+
 pnpm install
 
 # Build the package
+
 pnpm run build
 
 # Run tests (if available)
+
 pnpm test
 
 # Lint the code
+
 pnpm run lint
 
 # Type check
+
 pnpm run typecheck
 ```
 

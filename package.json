@@ -1,26 +1,32 @@
 {
   "name": "@entrolytics/redis-client",
-  "version": "2.1.0",
+  "version": "2.3.0",
   "description": "Redis client for Entrolytics - First-party growth analytics for the edge",
   "keywords": [
-    "redis",
-    "cache",
-    "rate-limiting",
     "analytics",
-    "entrolytics"
+    "cache",
+    "entrolytics",
+    "rate-limiting",
+    "redis"
   ],
-  "author": "Entrolytics <hey@entrolytics.click>",
-  "license": "MIT",
   "homepage": "https://github.com/entrolytics/redis-client",
+  "bugs": {
+    "url": "https://github.com/entrolytics/redis-client/issues"
+  },
+  "license": "MIT",
+  "author": "Entrolytics <hey@entrolytics.click>",
   "repository": {
     "type": "git",
     "url": "https://github.com/entrolytics/redis-client.git",
     "directory": "redis-client"
   },
-  "bugs": {
-    "url": "https://github.com/entrolytics/redis-client/issues"
-  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "type": "module",
+  "sideEffects": false,
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,41 +37,38 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
-  "sideEffects": false,
-  "engines": {
-    "node": ">=22.x"
-  },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "rollup -c rollup.config.mjs",
-    "dev": "rollup -c rollup.config.mjs --watch",
-    "lint": "biome check .",
-    "format": "biome format --write .",
-    "check": "biome check --write .",
-    "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "build": "vp pack",
+    "check": "vp lint --fix . && vp fmt --write .",
+    "dev": "vp pack --watch",
+    "format": "vp fmt --write .",
+    "lint": "vp lint . && vp fmt --check .",
+    "lint:fix-unsafe": "vp lint -f stylish --import-plugin --type-aware --type-check --vitest-plugin --fix --fix-suggestions --fix-dangerously .",
+    "test": "vp test run",
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "debug": "^4.4.3",
-    "redis": "^5.10.0"
+    "redis": "^5.11.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.11",
-    "@rollup/plugin-commonjs": "^29.0.0",
-    "@rollup/plugin-node-resolve": "^16.0.3",
-    "@types/debug": "^4.1.12",
-    "@types/node": "^25.0.3",
-    "rollup": "^4.54.0",
-    "rollup-plugin-dts": "^6.3.0",
-    "rollup-plugin-esbuild": "^6.2.1",
-    "typescript": "^5.9.3",
-    "vitest": "latest"
+    "@types/debug": "^4.1.13",
+    "@types/node": "^25.5.0",
+    "typescript": "rc",
+    "vite-plus": "latest",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.13"
+  },
+  "engines": {
+    "node": ">=24.x"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    }
   }
 }

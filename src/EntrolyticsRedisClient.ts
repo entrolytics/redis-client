@@ -1,5 +1,5 @@
 import debug from 'debug';
-import { createClient, type RedisClientType } from 'redis';
+import { createClient } from 'redis';
 
 export const log = debug('entrolytics:redis-client');
 
@@ -29,7 +29,7 @@ export type TTLOption = number | { EX?: number; PX?: number; EXAT?: number; PXAT
 
 export class EntrolyticsRedisClient {
   url: string;
-  private _client: RedisClientType;
+  private _client: ReturnType<typeof createClient>;
   private _isConnected: boolean;
   private _isConnecting: boolean;
   private _connectPromise: Promise<void> | null;
@@ -74,7 +74,7 @@ export class EntrolyticsRedisClient {
     });
 
     this.url = url;
-    this._client = client as RedisClientType;
+    this._client = client;
     this._isConnected = false;
     this._isConnecting = false;
     this._connectPromise = null;
@@ -84,7 +84,7 @@ export class EntrolyticsRedisClient {
   }
 
   /** Access the underlying redis client for advanced operations */
-  get client(): RedisClientType {
+  get client(): ReturnType<typeof createClient> {
     return this._client;
   }
 
@@ -155,9 +155,11 @@ export class EntrolyticsRedisClient {
       if (data === null) return null;
 
       try {
+        // oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion
         return JSON.parse(data) as T;
       } catch {
         // If JSON parse fails, return as-is (might be a plain string)
+        // oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion
         return data as T;
       }
     } catch (err) {

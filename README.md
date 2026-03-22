@@ -1,9 +1,9 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/entrolytics/.github/main/media/entrov2.png" alt="Entrolytics" width="64" height="64">
+- <img src="https://raw.githubusercontent.com/entrolytics/.github/main/media/entrov2.png" alt="Entrolytics" width="64" height="64">
 
-  [![npm](https://img.shields.io/npm/v/@entrolytics/redis-client.svg?logo=npm)](https://www.npmjs.com/package/@entrolytics/redis-client)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![npm](https://img.shields.io/npm/v/@entrolytics/redis-client.svg?logo=npm)](https://www.npmjs.com/package/@entrolytics/redis-client)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6.svg?logo=typescript\&logoColor=white)](https://www.typescriptlang.org/)
 
 </div>
 
@@ -14,6 +14,7 @@
 **@entrolytics/redis-client** is the official Redis client for Entrolytics - first-party growth analytics for the edge. Provides caching, rate limiting, and key management with automatic prefixing and statistics tracking.
 
 **Why use this client?**
+
 - Cache-through pattern for automatic query caching
 - Built-in rate limiting with configurable windows
 - Cache statistics for monitoring hit/miss rates
@@ -26,6 +27,7 @@
 <td width="50%">
 
 ### Caching
+
 - Cache-through pattern
 - Automatic key prefixing
 - Soft delete support
@@ -35,6 +37,7 @@
 <td width="50%">
 
 ### Rate Limiting
+
 - Configurable windows
 - Remaining count tracking
 - Per-key rate limits
@@ -109,7 +112,7 @@ const redis = new EntrolyticsRedisClient({
 const user = await redis.fetch(
   `user:${userId}`,
   () => db.query.users.findFirst({ where: eq(users.id, userId) }),
-  86400 // Cache for 24 hours
+  86400, // Cache for 24 hours
 );
 ```
 
@@ -119,8 +122,8 @@ const user = await redis.fetch(
 // Returns true if rate limit exceeded
 const isLimited = await redis.rateLimit(
   `api:${ip}`,
-  100,  // 100 requests
-  60    // per 60 seconds
+  100, // 100 requests
+  60, // per 60 seconds
 );
 
 if (isLimited) {
@@ -184,11 +187,11 @@ const health = await redis.healthCheck();
 
 ## Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `url` | `string` | required | Redis connection URL |
-| `prefix` | `string` | `'entrolytics:'` | Key prefix for all operations |
-| `defaultTTL` | `number` | `3600` | Default TTL in seconds |
+| Option       | Type     | Default          | Description                   |
+| ------------ | -------- | ---------------- | ----------------------------- |
+| `url`        | `string` | required         | Redis connection URL          |
+| `prefix`     | `string` | `'entrolytics:'` | Key prefix for all operations |
+| `defaultTTL` | `number` | `3600`           | Default TTL in seconds        |
 
 ## License
 
