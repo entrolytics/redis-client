@@ -8,7 +8,7 @@ export default defineConfig({
     dts: true,
     clean: true,
     sourcemap: true,
-    target: 'node20',
+    target: 'node24',
     deps: {
       neverBundle: ['redis', 'debug'],
     },
@@ -30,6 +30,15 @@ export default defineConfig({
     sortPackageJson: {
       sortScripts: true,
     },
+  },
+  run: {
+    cache: {
+      scripts: true,
+      tasks: true,
+    },
+  },
+  staged: {
+    '*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}': 'vp check --fix',
   },
   lint: {
     categories: {

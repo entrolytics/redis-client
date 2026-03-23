@@ -1,6 +1,6 @@
 {
   "name": "@entrolytics/redis-client",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Redis client for Entrolytics - First-party growth analytics for the edge",
   "keywords": [
     "analytics",
@@ -57,7 +57,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.13",
     "@types/node": "^25.5.0",
-    "typescript": "rc",
+    "typescript": "beta",
     "vite-plus": "latest",
     "vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.13"
   },
