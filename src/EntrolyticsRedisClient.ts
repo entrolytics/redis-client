@@ -1,5 +1,5 @@
 import debug from 'debug';
-import { createClient } from 'redis';
+import { createClient, type RedisClientType } from 'redis';
 
 export const log = debug('entrolytics:redis-client');
 
@@ -29,10 +29,10 @@ export type TTLOption = number | { EX?: number; PX?: number; EXAT?: number; PXAT
 
 export class EntrolyticsRedisClient {
   url: string;
-  private _client: ReturnType<typeof createClient>;
-  private _isConnected: boolean;
-  private _isConnecting: boolean;
-  private _connectPromise: Promise<void> | null;
+  private redisClient: RedisClientType;
+  private connected: boolean;
+  private connecting: boolean;
+  private connectionPromise: Promise<void> | null;
   prefix: string;
   defaultTTL: number;
   private stats: { hits: number; misses: number };
@@ -66,31 +66,31 @@ export class EntrolyticsRedisClient {
     client.on('connect', () => log('Redis connecting...'));
     client.on('ready', () => {
       log('Redis ready');
-      this._isConnected = true;
+      this.connected = true;
     });
     client.on('end', () => {
       log('Redis connection ended');
-      this._isConnected = false;
+      this.connected = false;
     });
 
     this.url = url;
-    this._client = client;
-    this._isConnected = false;
-    this._isConnecting = false;
-    this._connectPromise = null;
+    this.redisClient = client;
+    this.connected = false;
+    this.connecting = false;
+    this.connectionPromise = null;
     this.prefix = prefix;
     this.defaultTTL = defaultTTL;
     this.stats = { hits: 0, misses: 0 };
   }
 
   /** Access the underlying redis client for advanced operations */
-  get client(): ReturnType<typeof createClient> {
-    return this._client;
+  get client(): RedisClientType {
+    return this.redisClient;
   }
 
   /** Check if currently connected */
   get isConnected(): boolean {
-    return this._isConnected;
+    return this.connected;
   }
 
   private prefixKey(key: string): string {
@@ -111,38 +111,38 @@ export class EntrolyticsRedisClient {
 
   async connect(): Promise<void> {
     // Already connected
-    if (this._isConnected) return;
+    if (this.connected) return;
 
     // Connection in progress - wait for it
-    if (this._isConnecting && this._connectPromise) {
-      await this._connectPromise;
+    if (this.connecting && this.connectionPromise) {
+      await this.connectionPromise;
       return;
     }
 
     // Start new connection
-    this._isConnecting = true;
-    this._connectPromise = this._client.connect().then(
+    this.connecting = true;
+    this.connectionPromise = this.redisClient.connect().then(
       () => {
-        this._isConnected = true;
-        this._isConnecting = false;
+        this.connected = true;
+        this.connecting = false;
         log('Redis connected');
       },
       err => {
-        this._isConnecting = false;
-        this._connectPromise = null;
+        this.connecting = false;
+        this.connectionPromise = null;
         throw err;
       },
     );
 
-    await this._connectPromise;
+    await this.connectionPromise;
   }
 
   async disconnect(): Promise<void> {
-    if (this._isConnected) {
-      await this._client.disconnect();
-      this._isConnected = false;
-      this._isConnecting = false;
-      this._connectPromise = null;
+    if (this.connected) {
+      await this.redisClient.disconnect();
+      this.connected = false;
+      this.connecting = false;
+      this.connectionPromise = null;
       log('Redis disconnected');
     }
   }
@@ -150,7 +150,7 @@ export class EntrolyticsRedisClient {
   async get<T = unknown>(key: string): Promise<T | null> {
     try {
       await this.connect();
-      const data = await this._client.get(this.prefixKey(key));
+      const data = await this.redisClient.get(this.prefixKey(key));
 
       if (data === null) return null;
 
@@ -174,7 +174,7 @@ export class EntrolyticsRedisClient {
   async getString(key: string): Promise<string | null> {
     try {
       await this.connect();
-      return this._client.get(this.prefixKey(key));
+      return this.redisClient.get(this.prefixKey(key));
     } catch (err) {
       log('Redis getString error:', err);
       return null;
@@ -188,7 +188,7 @@ export class EntrolyticsRedisClient {
     try {
       await this.connect();
       const prefixedKeys = keys.map(k => this.prefixKey(k));
-      return this._client.mGet(prefixedKeys);
+      return this.redisClient.mGet(prefixedKeys);
     } catch (err) {
       log('Redis mGet error:', err);
       return keys.map(() => null);
@@ -201,7 +201,7 @@ export class EntrolyticsRedisClient {
   async setEx(key: string, seconds: number, value: string): Promise<string | null> {
     try {
       await this.connect();
-      return this._client.setEx(this.prefixKey(key), seconds, value);
+      return this.redisClient.setEx(this.prefixKey(key), seconds, value);
     } catch (err) {
       log('Redis setEx error:', err);
       return null;
@@ -223,10 +223,10 @@ export class EntrolyticsRedisClient {
       const ttlSeconds = this.extractTTL(ttl) ?? this.defaultTTL;
 
       if (ttlSeconds > 0) {
-        return this._client.setEx(prefixedKey, ttlSeconds, serialized);
+        return this.redisClient.setEx(prefixedKey, ttlSeconds, serialized);
       }
 
-      return this._client.set(prefixedKey, serialized);
+      return this.redisClient.set(prefixedKey, serialized);
     } catch (err) {
       log('Redis set error:', err);
       return null;
@@ -236,7 +236,7 @@ export class EntrolyticsRedisClient {
   async del(key: string): Promise<number> {
     try {
       await this.connect();
-      return this._client.del(this.prefixKey(key));
+      return this.redisClient.del(this.prefixKey(key));
     } catch (err) {
       log('Redis del error:', err);
       return 0;
@@ -246,7 +246,7 @@ export class EntrolyticsRedisClient {
   async incr(key: string): Promise<number> {
     try {
       await this.connect();
-      return this._client.incr(this.prefixKey(key));
+      return this.redisClient.incr(this.prefixKey(key));
     } catch (err) {
       log('Redis incr error:', err);
       return 0;
@@ -256,7 +256,7 @@ export class EntrolyticsRedisClient {
   async incrBy(key: string, amount: number): Promise<number> {
     try {
       await this.connect();
-      return this._client.incrBy(this.prefixKey(key), amount);
+      return this.redisClient.incrBy(this.prefixKey(key), amount);
     } catch (err) {
       log('Redis incrBy error:', err);
       return 0;
@@ -266,7 +266,7 @@ export class EntrolyticsRedisClient {
   async decr(key: string): Promise<number> {
     try {
       await this.connect();
-      return this._client.decr(this.prefixKey(key));
+      return this.redisClient.decr(this.prefixKey(key));
     } catch (err) {
       log('Redis decr error:', err);
       return 0;
@@ -276,7 +276,7 @@ export class EntrolyticsRedisClient {
   async decrBy(key: string, amount: number): Promise<number> {
     try {
       await this.connect();
-      return this._client.decrBy(this.prefixKey(key), amount);
+      return this.redisClient.decrBy(this.prefixKey(key), amount);
     } catch (err) {
       log('Redis decrBy error:', err);
       return 0;
@@ -286,7 +286,7 @@ export class EntrolyticsRedisClient {
   async expire(key: string, seconds: number): Promise<boolean> {
     try {
       await this.connect();
-      const result = await this._client.expire(this.prefixKey(key), seconds);
+      const result = await this.redisClient.expire(this.prefixKey(key), seconds);
       return result === 1;
     } catch (err) {
       log('Redis expire error:', err);
@@ -297,7 +297,7 @@ export class EntrolyticsRedisClient {
   async ttl(key: string): Promise<number> {
     try {
       await this.connect();
-      return this._client.ttl(this.prefixKey(key));
+      return this.redisClient.ttl(this.prefixKey(key));
     } catch (err) {
       log('Redis ttl error:', err);
       return -1;
@@ -307,7 +307,7 @@ export class EntrolyticsRedisClient {
   async exists(key: string): Promise<boolean> {
     try {
       await this.connect();
-      const result = await this._client.exists(this.prefixKey(key));
+      const result = await this.redisClient.exists(this.prefixKey(key));
       return result === 1;
     } catch (err) {
       log('Redis exists error:', err);
@@ -320,7 +320,7 @@ export class EntrolyticsRedisClient {
   async zAdd(key: string, score: number, value: string): Promise<number> {
     try {
       await this.connect();
-      return this._client.zAdd(this.prefixKey(key), { score, value });
+      return this.redisClient.zAdd(this.prefixKey(key), { score, value });
     } catch (err) {
       log('Redis zAdd error:', err);
       return 0;
@@ -330,7 +330,7 @@ export class EntrolyticsRedisClient {
   async zRemRangeByScore(key: string, min: number, max: number): Promise<number> {
     try {
       await this.connect();
-      return this._client.zRemRangeByScore(this.prefixKey(key), min, max);
+      return this.redisClient.zRemRangeByScore(this.prefixKey(key), min, max);
     } catch (err) {
       log('Redis zRemRangeByScore error:', err);
       return 0;
@@ -340,7 +340,7 @@ export class EntrolyticsRedisClient {
   async zCard(key: string): Promise<number> {
     try {
       await this.connect();
-      return this._client.zCard(this.prefixKey(key));
+      return this.redisClient.zCard(this.prefixKey(key));
     } catch (err) {
       log('Redis zCard error:', err);
       return 0;
@@ -350,7 +350,7 @@ export class EntrolyticsRedisClient {
   async zRange(key: string, start: number, stop: number): Promise<string[]> {
     try {
       await this.connect();
-      return this._client.zRange(this.prefixKey(key), start, stop);
+      return this.redisClient.zRange(this.prefixKey(key), start, stop);
     } catch (err) {
       log('Redis zRange error:', err);
       return [];
@@ -366,10 +366,10 @@ export class EntrolyticsRedisClient {
       await this.connect();
 
       const prefixedKey = this.prefixKey(`ratelimit:${key}`);
-      const current = await this._client.incr(prefixedKey);
+      const current = await this.redisClient.incr(prefixedKey);
 
       if (current === 1) {
-        await this._client.expire(prefixedKey, windowSeconds);
+        await this.redisClient.expire(prefixedKey, windowSeconds);
       }
 
       return current > limit;
@@ -387,7 +387,7 @@ export class EntrolyticsRedisClient {
       await this.connect();
 
       const prefixedKey = this.prefixKey(`ratelimit:${key}`);
-      const current = await this._client.get(prefixedKey);
+      const current = await this.redisClient.get(prefixedKey);
       const count = current ? parseInt(current, 10) : 0;
 
       return Math.max(0, limit - count);
@@ -431,7 +431,7 @@ export class EntrolyticsRedisClient {
   /**
    * Store data in cache with optional TTL
    */
-  async store<T>(key: string, data: T, ttl?: number): Promise<string | null> {
+  async store(key: string, data: unknown, ttl?: number): Promise<string | null> {
     return this.set(key, data, ttl);
   }
 
@@ -454,14 +454,14 @@ export class EntrolyticsRedisClient {
       let deletedCount = 0;
 
       do {
-        const result = await this._client.scan(cursor, {
+        const result = await this.redisClient.scan(cursor, {
           MATCH: prefixedPattern,
           COUNT: 100,
         });
-        cursor = String(result.cursor);
+        cursor = result.cursor;
 
         if (result.keys.length > 0) {
-          deletedCount += await this._client.del(result.keys);
+          deletedCount += await this.redisClient.del(result.keys);
         }
       } while (cursor !== '0');
 
@@ -496,7 +496,7 @@ export class EntrolyticsRedisClient {
    */
   async ping(): Promise<string> {
     await this.connect();
-    return this._client.ping();
+    return this.redisClient.ping();
   }
 
   /**

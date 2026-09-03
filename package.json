@@ -1,6 +1,6 @@
 {
   "name": "@entrolytics/redis-client",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "Redis client for Entrolytics - First-party growth analytics for the edge",
   "keywords": [
     "analytics",
@@ -48,27 +48,22 @@
     "lint": "vp lint . && vp fmt --check .",
     "lint:fix-unsafe": "vp lint -f stylish --import-plugin --type-aware --type-check --vitest-plugin --fix --fix-suggestions --fix-dangerously .",
     "test": "vp test run",
-    "typecheck": "tsgo --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "debug": "^4.4.3",
-    "redis": "^5.11.0"
+    "redis": "^6.2.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.13",
-    "@types/node": "^25.5.0",
-    "typescript": "^6.0.2",
-    "vite-plus": "latest",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.14"
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1",
+    "vite-plus": "^0.2.8",
+    "vitest": "^4.1.10"
   },
   "engines": {
-    "node": ">=24.x"
+    "node": ">=24.19.0"
   },
-  "packageManager": "pnpm@10.33.0",
-  "pnpm": {
-    "overrides": {
-      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
-    }
-  }
+  "packageManager": "pnpm@11.21.0"
 }

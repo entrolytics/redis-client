@@ -3,7 +3,7 @@
 
 [![npm](https://img.shields.io/npm/v/@entrolytics/redis-client.svg?logo=npm)](https://www.npmjs.com/package/@entrolytics/redis-client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6.svg?logo=typescript\&logoColor=white)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
 </div>
 
