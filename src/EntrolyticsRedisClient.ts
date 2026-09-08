@@ -1,7 +1,7 @@
-import debug from 'debug';
+import debug, { type Debugger } from 'debug';
 import { createClient, type RedisClientType } from 'redis';
 
-export const log = debug('entrolytics:redis-client');
+export const log: Debugger = debug('entrolytics:redis-client');
 
 export const DELETED = '__DELETED__';
 export const CACHE_PREFIX = 'entrolytics:';

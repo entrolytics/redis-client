@@ -9,9 +9,7 @@ export default defineConfig({
     clean: true,
     sourcemap: true,
     target: 'node24',
-    deps: {
-      neverBundle: ['redis', 'debug'],
-    },
+    deps: { resolveDepSubpath: true, neverBundle: ['redis', 'debug'] },
   },
   fmt: {
     printWidth: 100,

@@ -273,7 +273,13 @@ export function getRateLimitHeaders(result: RateLimitResult): Record<string, str
  * Create a rate limiter bound to a specific Redis client
  * Useful for creating app-specific rate limiters
  */
-export function createRateLimiter(client: EntrolyticsRedisClient | null) {
+export interface RateLimiter {
+  check: (identifier: string, config: RateLimitConfig) => Promise<RateLimitResult>
+  checkSimple: (identifier: string, limit: number, windowSeconds: number) => Promise<boolean>
+  getRemaining: (identifier: string, config: RateLimitConfig) => Promise<number>
+}
+
+export function createRateLimiter(client: EntrolyticsRedisClient | null): RateLimiter {
   return {
     /**
      * Check rate limit for an identifier
