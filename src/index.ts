@@ -15,6 +15,7 @@ export {
   getRateLimitHeaders,
   RATE_LIMITS,
   type RateLimitConfig,
+  type RateLimiter,
   type RateLimitResult,
   rateLimit,
   rateLimitSimple,
