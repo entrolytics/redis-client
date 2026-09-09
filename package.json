@@ -41,13 +41,13 @@
     "access": "public"
   },
   "scripts": {
-    "build": "vp pack",
-    "check": "vp lint --fix . && vp fmt --write .",
-    "dev": "vp pack --watch",
-    "format": "vp fmt --write .",
-    "lint": "vp lint . && vp fmt --check .",
-    "lint:fix-unsafe": "vp lint -f stylish --import-plugin --type-aware --type-check --vitest-plugin --fix --fix-suggestions --fix-dangerously .",
-    "test": "vp test run",
+    "build": "tsdown",
+    "check": "oxlint --fix . && oxfmt --write .",
+    "dev": "tsdown --watch",
+    "format": "oxfmt --write .",
+    "lint": "oxlint . && oxfmt --check .",
+    "lint:fix-unsafe": "oxlint -f stylish --import-plugin --type-aware --type-check --vitest-plugin --fix --fix-suggestions --fix-dangerously .",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -57,9 +57,11 @@
   "devDependencies": {
     "@types/debug": "^4.1.13",
     "@types/node": "^26.5.0",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
+    "tsdown": "^0.23.0",
     "typescript": "next",
-    "vite": "catalog:",
-    "vite-plus": "catalog:"
+    "vitest": "^5.0.0"
   },
   "engines": {
     "node": ">=24.20.0"
